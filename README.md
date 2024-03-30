@@ -38,9 +38,13 @@ The `data` folder includes the example data used in the tutorial.
 `BMLMA_tutorial.html` contains the interactive `R` scripts (in the format of html). 
 
 
-### `func` folder
+### `custom_func` folder
 
 The `custom_func` folder includes the helper functions (`custom_func.R`).
+
+
+### `ref` folder
+The `ref` folder includes `.csl` and `.bib` materials for literature citation. It is not directly related to the tutorial and corresponding `R` code.
 
 
 ## Licence
