@@ -1284,7 +1284,7 @@ In `R`, it is very straightforward to implement robust variance
 estimation. We can supply the fitted MLMA or BMLMA to the function
 `robust()` from the `metafor` package. We use ‘bias-reduced
 linearization’ correction (the so-called `CR2` in `clubSandwich` package
-\@ pustejovsky2022meta) for small-sample size adjustment. Using the
+@pustejovsky2022meta) for small-sample size adjustment. Using the
 fitted BMLMA (the object `BMLMA`) as an example, the implementation of
 robust variance estimation is as:
 <!--# it will be nice to have robust for mulitlevel ones so you can fit this so people get exposed to the idea that robust can take any meta-analytic models -->
