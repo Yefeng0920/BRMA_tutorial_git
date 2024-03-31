@@ -652,6 +652,7 @@ We recommend conducting a sensitivity analysis to examine the extent to
 which the overall effect derived from the MLMA of lnRR and SMD is
 sensitive to the assumption of sampling correlation values ($\rho_{s}$)
 used for constructing sampling variance-covariance matrix.
+<!--# we need to show to how to get I2 and other hetro measures using orchaRd??? -->
 
 First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these
 values arbitrarily; you can set them based on your expertise in your
@@ -926,6 +927,7 @@ We also use `-1` to remove the intercept (non-contrast coding).
 
 The complete syntax to fit the bivariate multilevel meta-analysis of
 lnRR and SMD (Equation 7) is as follows:
+<!--# adding some visualizations - we could galaxy plots discuss -->
 
 ```{=html}
 <pre class="code rsplus">
