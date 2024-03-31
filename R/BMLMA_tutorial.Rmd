@@ -65,7 +65,9 @@ paper:
 > Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel
 > meta-analyses of log response ratio and standardized mean difference
 > towards robust and reproducible evidence syntheses in environmental
-> and biological sciences. 2024 <!--# please add Alistair  -->
+> and biological sciences. 2024 
+
+<!--# please add Alistair  -->
 
 ```{r global options, include=FALSE}
 library(knitr)
