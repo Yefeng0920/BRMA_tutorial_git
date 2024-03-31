@@ -19,6 +19,8 @@ output:
     as_is: true 
 editor_options:
   chunk_output_type: console
+  markdown: 
+    wrap: 72
 bibliography: "references.bib"
 csl: "GBC.csl"
 link-citations: yes  
@@ -26,36 +28,44 @@ link-citations: yes
 
 # Contact
 
-If you have any questions, mistakes, or bug to report, please contact corresponding authors:
+If you have any questions, mistakes, or bug to report, please contact
+corresponding authors:
 
-- Dr. Yefeng Yang
+-   Dr. Yefeng Yang
 
-Evolution & Ecology Research Centre, EERC
-School of Biological, Earth and Environmental Sciences, BEES
-The University of New South Wales, Sydney, Australia
+Evolution & Ecology Research Centre, EERC School of Biological, Earth
+and Environmental Sciences, BEES The University of New South Wales,
+Sydney, Australia
 
-Email: yefeng.yang1@unsw.edu.au
+Email:
+[yefeng.yang1\@unsw.edu.au](mailto:yefeng.yang1@unsw.edu.au){.email}
 
-- Professor Shinichi Nakagawa, PhD, FRSN
+-   Professor Shinichi Nakagawa, PhD, FRSN
 
-Evolution & Ecology Research Centre, EERC
-School of Biological, Earth and Environmental Sciences, BEES
-The University of New South Wales, Sydney, Australia
+Evolution & Ecology Research Centre, EERC School of Biological, Earth
+and Environmental Sciences, BEES The University of New South Wales,
+Sydney, Australia
 
-Email: s.nakagawa@unsw.edu.au
+Email: [s.nakagawa\@unsw.edu.au](mailto:s.nakagawa@unsw.edu.au){.email}
 
 # Update
 
 Last update: April 2024
 
-We will update this tutorial when necessary. Readers can access the latest version in our [GitHub repository](https://github.com/Yefeng0920/BRMA_tutorial_git).
+We will update this tutorial when necessary. Readers can access the
+latest version in our [GitHub
+repository](https://github.com/Yefeng0920/BRMA_tutorial_git).
 
 # Credit and citation
 
-If our paper and tutorial have helped you, please cite the following paper:
+If our paper and tutorial have helped you, please cite the following
+paper:
 
-> Yefeng Yang, Coralie Williams, Kyle Morrison, Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel meta-analyses of log response ratio and standardized mean difference towards robust and reproducible evidence syntheses in environmental and biological sciences. 2024 
-
+> Yefeng Yang, Coralie Williams, Kyle Morrison, Lorenzo Ricolfi, Jinming
+> Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel
+> meta-analyses of log response ratio and standardized mean difference
+> towards robust and reproducible evidence syntheses in environmental
+> and biological sciences. 2024 <!--# please add Alistair  -->
 
 ```{r global options, include=FALSE}
 library(knitr)
@@ -71,19 +81,35 @@ opts_knit$set(width = 75)
 
 ```
 
-#  Setup `R` in your computer
+# Setup `R` in your computer
 
-Our tutorial uses R statistical software and existing R packages, which you will first need to download and install.
+Our tutorial uses R statistical software and existing R packages, which
+you will first need to download and install.
 
-If you do not have it on your machine, first install `R` ([download](https://cran.r-project.org/)). We recommend also downloading `RStudio`, a popular integrated development environment for coding with `R`, created by a company named posit ([download](https://posit.co/products/open-source/rstudio/)). 
+If you do not have it on your machine, first install `R`
+([download](https://cran.r-project.org/)). We recommend also downloading
+`RStudio`, a popular integrated development environment for coding with
+`R`, created by a company named posit
+([download](https://posit.co/products/open-source/rstudio/)).
 
-After installing `R`, you must install several packages that contain necessary functions for performing the analyses in this tutorial. If the packages are archived in CRAN, use `install.packages()` to install them. For example, to install the `metafor` package (a common meta-analysis package), you can execute `install.packages("metafor")` in the console (bottom left pane of `R Studio`). To install packages that are not on CRAN and archived in Github repositories, execute `devtools::install_github()`. For example, to install `orchaRd` (a meta-analysis visualization package) from Github repository, execute `devtools::install_github("daniel1noble/orchaRd", force = TRUE)`.
+After installing `R`, you must install several packages that contain
+necessary functions for performing the analyses in this tutorial. If the
+packages are archived in CRAN, use `install.packages()` to install them.
+For example, to install the `metafor` package (a common meta-analysis
+package), you can execute `install.packages("metafor")` in the console
+(bottom left pane of `R Studio`). To install packages that are not on
+CRAN and archived in Github repositories, execute
+`devtools::install_github()`. For example, to install `orchaRd` (a
+meta-analysis visualization package) from Github repository, execute
+`devtools::install_github("daniel1noble/orchaRd", force = TRUE)`.
 
 Key package list:
 
-`metafor`, `clubSandwich`, `tidyverse`, `here`, `DT`, `readxl`, `stringr`, `ggplot2`, `pander`.
+`metafor`, `clubSandwich`, `tidyverse`, `here`, `DT`, `readxl`,
+`stringr`, `ggplot2`, `pander`.
 
-These packages might take a little while to install; you may wish to grab a cup of coffee while waiting! 
+These packages might take a little while to install; you may wish to
+grab a cup of coffee while waiting!
 
 ```{r load packages, cache = FALSE}
 pacman::p_load(tidyverse, 
@@ -101,13 +127,18 @@ pacman::p_load(tidyverse,
 
 # Load custom functions
 
-We also provide some additional helper functions that are necessary for our worked examples. The most straightforward way to use these custom functions is to source them with:
+We also provide some additional helper functions that are necessary for
+our worked examples. The most straightforward way to use these custom
+functions is to source them with:
 
+```{=html}
 <pre class="code rsplus">
 source(here("custom_func","custom_func.R"))
 </pre>
-
-Alternatively, paste the source code (included in the file custom_func.R) into the console, and hit "Enter" to let `R` "learn" these custom functions.
+```
+Alternatively, paste the source code (included in the file
+custom_func.R) into the console, and hit "Enter" to let `R` "learn"
+these custom functions.
 
 ```{r custom functions}
 source(here("custom_func","custom_func.R"))
@@ -117,20 +148,22 @@ source(here("custom_func","custom_func.R"))
 
 Let's load the example dataset from @burgess2021classifying:
 
+```{=html}
 <pre class="code rsplus">
 dat <- read_excel(here("data","Burgess_2021_Global Change Biology.xlsx"))
-</pre> 
-
-
+</pre>
+```
 ```{r load data, cache = FALSE}
 ### import dataset
 dat <- read_excel(here("data","Burgess_2021_Global Change Biology.xlsx"))
 ```
 
-For simplicity, we will only keep the columns that are necessary to demonstrate the meta-analytic techniques of interest in this tutorial.
+For simplicity, we will only keep the columns that are necessary to
+demonstrate the meta-analytic techniques of interest in this tutorial.
 
-__Table S1__  
+**Table S1**\
 The variables in the first worked example @burgess2021classifying.
+
 ```{r Table S1}
 # drop unused columns
 dat <- dat[,which(colnames(dat) %in% c("Study_ID", "Control.Mean", "Control.SD", "Control.Reps", "Stress2.Mean", "Stress2.SD", "Stress2.Reps"))]
@@ -143,18 +176,27 @@ t1 <- select(dat, c(8, 1, 2:7)) %>% DT::datatable()
 t1
 ```
 
-**Table S1** includes the coded variables that were extracted from published papers. 
+**Table S1** includes the coded variables that were extracted from
+published papers.
 
-You can find more details about the variables in the [paper](https://doi.org/10.1111/gcb.14646) by @burgess2021classifying, if interested. 
+You can find more details about the variables in the
+[paper](https://doi.org/10.1111/gcb.14646) by @burgess2021classifying,
+if interested.
 
-Here, we will use the descriptive statistics will be used to compute effect sizes, including sample means (`Control.Mean` and `Stress2.Mean`), standard deviations (`Control.SD` and `Stress2`) and sample sizes (`Control.Reps` and `Stress2.Reps`) in two groups.
+Here, we will use the descriptive statistics will be used to compute
+effect sizes, including sample means (`Control.Mean` and
+`Stress2.Mean`), standard deviations (`Control.SD` and `Stress2`) and
+sample sizes (`Control.Reps` and `Stress2.Reps`) in two groups.
 
-# Mean difference effect sizes {.tabset} 
+# Mean difference effect sizes {.tabset}
 
 ## Log response ratio (lnRR)
 
-We can use the function `escalc()` in `metafor` package @viechtbauer2010conducting to compute the point estimate of log response ratio ($lnRR$) and associated sampling variance ($s_{lnRR}^2$) with:
+We can use the function `escalc()` in `metafor` package
+@viechtbauer2010conducting to compute the point estimate of log response
+ratio ($lnRR$) and associated sampling variance ($s_{lnRR}^2$) with:
 
+```{=html}
 <pre class="code rsplus">
 dat_lnRR <- escalc(measure = "ROM",  # the lnRR is specified; "ROM" means ratio of means
                    m1i = Stress2.Mean, # mean of group 1 (e.g., group to which environmental stressor applied) 
@@ -168,7 +210,7 @@ dat_lnRR <- escalc(measure = "ROM",  # the lnRR is specified; "ROM" means ratio 
                    append = F)
 dat_lnRR <- dat %>% mutate(lnRR = dat_lnRR$yi, V_lnRR = dat_lnRR$vi) # add effect size estimate and sample variance to the dataframe
 </pre>
-
+```
 ```{r lnRR calculation, results='hide', warning=FALSE}
 # compute lnRR
 dat_lnRR <- escalc(measure = "ROM",  # the lnRR is specified; "ROM" means ratio of means
@@ -185,11 +227,14 @@ dat_lnRR <- escalc(measure = "ROM",  # the lnRR is specified; "ROM" means ratio 
 dat_lnRR <- dat %>% mutate(lnRR = dat_lnRR$yi, V_lnRR = dat_lnRR$vi) # add effect size estimate and sample variance to the dataframe
 ```
 
-Let's have a loot at the effect size estimates $lnRR$ and their sampling variances $s_{lnRR}^2$.
+Let's have a loot at the effect size estimates $lnRR$ and their sampling
+variances $s_{lnRR}^2$.
 
-__Table S2__  
+**Table S2**
 
-The point estimates of effect size $lnRR$ (the variable `lnRR`) and their sampling variance $s_{lnRR}^2$ (the variable `V_lnRR`) for each comparison (treatment vs. control) of the included studies.  
+The point estimates of effect size $lnRR$ (the variable `lnRR`) and
+their sampling variance $s_{lnRR}^2$ (the variable `V_lnRR`) for each
+comparison (treatment vs. control) of the included studies.
 
 ```{r Table S2}
 # show the calculated effect sizes and their sampling variances
@@ -199,8 +244,12 @@ t2 %>% dfround(4) %>% DT::datatable()
 
 ## Standardized mean difference (SMD)
 
-In the same vein, We can use the function `escalc()` in `metafor` package to compute the point estimate of standardized mean difference ($SMD$; well known estimators: Hedges’ g or Cohen’s d) and associated sampling variance ($s_{SMD}^2$) with:
+In the same vein, We can use the function `escalc()` in `metafor`
+package to compute the point estimate of standardized mean difference
+($SMD$; well known estimators: Hedges’ g or Cohen’s d) and associated
+sampling variance ($s_{SMD}^2$) with:
 
+```{=html}
 <pre class="code rsplus">
 dat_SMD <- escalc(measure = "SMD",  # the SMD is specified; "SMD" means standardized mean difference
                   m1i = Stress2.Mean, # mean of group 1 (e.g., group to which environmental stressor applied) 
@@ -214,8 +263,7 @@ dat_SMD <- escalc(measure = "SMD",  # the SMD is specified; "SMD" means standard
                   append = F)
 dat_SMD <- dat %>% mutate(SMD = dat_SMD$yi, V_SMD = dat_SMD$vi) # add effect size estimate and sample variance to the dataframe
 </pre>
-
-
+```
 ```{r SMD calculation, results='hide', warning=FALSE}
 # compute SMD
 dat_SMD <- escalc(measure = "SMD",  # the SMD is specified; "SMD" means standardized mean difference
@@ -232,11 +280,14 @@ dat_SMD <- escalc(measure = "SMD",  # the SMD is specified; "SMD" means standard
 dat_SMD <- dat %>% mutate(SMD = dat_SMD$yi, V_SMD = dat_SMD$vi) # add effect size estimate and sample variance to the dataframe
 ```
 
-Let's have a loot at the effect size estimates $SMD$ and their sampling variances $s_{SMD}^2$.
+Let's have a look at the effect size estimates $SMD$ and their sampling
+variances $s_{SMD}^2$.
 
-__Table S3__  
+**Table S3**
 
-The point estimates of effect size $SMD$ (the variable **yi**) and their sampling variance $s_{SMD}^2$ (the variable **vi**) for each comparison (treatment vs. control) of the included studies.  
+The point estimates of effect size $SMD$ (the variable **yi**) and their
+sampling variance $s_{SMD}^2$ (the variable **vi**) for each comparison
+(treatment vs. control) of the included studies.
 
 ```{r Table S3}
 # show the calculated effect sizes and their sampling variances
@@ -246,11 +297,34 @@ t3 %>% dfround(4) %>% DT::datatable()
 
 # Multilevel meta-analysis of lnRR together with SMD
 
-In this section, we illustrate the implementation of the multilevel meta-analysis (MLMA) of lnRR and SMD (Equation 7) in `R`. The function `rma.mv()` in `metafor` allows us to fit the MLMA using lnRR together with SMD. To fit such a model, we need to specify the variable `Study_ID` and `ES_ID` as the nested random effects via the argument `random`. In this regard, we can account for the between-study effect ($\mu_{[lnRR]j}$ or $\mu_{[SMD]j}$) and within-study effect ($w_{[lnRR]j}$ or $w_{[SMD]j}$). The function `rma.mv()` allows for the nested random-effects structure via the argument `random`. 
+In this section, we illustrate the implementation of the multilevel
+meta-analysis (MLMA) of lnRR and SMD (Equation 7) in `R`. The function
+`rma.mv()` in `metafor` allows us to fit the MLMA using lnRR together
+with SMD. To fit such a model, we need to specify the variable
+`Study_ID` and `ES_ID` as the nested random effects via the argument
+`random`. In this regard, we can account for the between-study effect
+($\mu_{[lnRR]j}$ or $\mu_{[SMD]j}$) and within-study effect
+($w_{[lnRR]j}$ or $w_{[SMD]j}$). The function `rma.mv()` allows for the
+nested random-effects structure via the argument `random`.
 
-We can use a formula to let `R` know the random-effects structure: starts with `~ 1`, followed by a `|`, then an identifier denoting the grouping variable related to the random effect (in our case, `Study_ID` or `ES_ID`). Traits with the same value of the grouping variable will receive a random effect of the same value, while traits with different values of the grouping variable are assumed to be independent. In our case, we have two grouping variables (random effects): `~ 1 | Study_ID` and `~ 1 | ES_ID`. The two formulas can be specified as list of formulas via `list()`: `random = list(~ 1 | Study_ID, ~ 1 | ES_ID)`. We can also use `random = ~ 1 | Study_ID / ES_ID` to specify the nested random-effects structure without using `list()`. `random = ~ 1 | Study_ID / ES_ID` adds a random effect corresponding to `Study_ID` and a random effect corresponding to `ES_ID` within `Study_ID` to the MLMA
+We can use a formula to let `R` know the random-effects structure:
+starts with `~ 1`, followed by a `|`, then an identifier denoting the
+grouping variable related to the random effect (in our case, `Study_ID`
+or `ES_ID`). Traits with the same value of the grouping variable will
+receive a random effect of the same value, while traits with different
+values of the grouping variable are assumed to be independent. In our
+case, we have two grouping variables (random effects): `~ 1 | Study_ID`
+and `~ 1 | ES_ID`. The two formulas can be specified as list of formulas
+via `list()`: `random = list(~ 1 | Study_ID, ~ 1 | ES_ID)`. We can also
+use `random = ~ 1 | Study_ID / ES_ID` to specify the nested
+random-effects structure without using `list()`.
+`random = ~ 1 | Study_ID / ES_ID` adds a random effect corresponding to
+`Study_ID` and a random effect corresponding to `ES_ID` within
+`Study_ID` to the MLMA
 
 The MLMA using $lnRR$ as the effect size measure can be fitted with:
+
+```{=html}
 <pre class="code rsplus">
 MLMA_lnRR <- rma.mv(yi = lnRR, # specify lnRR as the effect size measure;
                     V = V_lnRR, # specify lnRR's sampling variance;
@@ -260,9 +334,11 @@ MLMA_lnRR <- rma.mv(yi = lnRR, # specify lnRR as the effect size measure;
                     method = "REML", # restricted likelihood maximum is assigned as the estimator for variance components as suggested;
                     data = dat_lnRR # dataset using lnRR as the effect size measure
                    )
-</pre>                  
-
+</pre>
+```
 The MLMA using $SMD$ as the effect size measure can be fitted with:
+
+```{=html}
 <pre class="code rsplus">
 MLMA_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure;
                    V = V_SMD, # specify SMD's sampling variance;
@@ -273,7 +349,7 @@ MLMA_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure;
                    data = dat_SMD # dataset using SMD as the effect size measure
                    )
 </pre>
-
+```
 ```{r fit MLMA of lnRR and SMD, results='hide', warning=FALSE}
 # fit Equation 7
 ## MLMA of lnRR
@@ -300,100 +376,141 @@ MLMA_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure;
 
 ```
 
-Next, we show how to properly interpret the model output of the fitted MLMA of lnRR along with SMD (the object `MLMA_lnRR` and `MLMA_SMD`). `summary()` function can return us the model output. 
+Next, we show how to properly interpret the model output of the fitted
+MLMA of lnRR along with SMD (the object `MLMA_lnRR` and `MLMA_SMD`).
+`summary()` function can return us the model output.
 
-The model output of the fitted MLMA of lnRR: 
+The model output of the fitted MLMA of lnRR:
 
+```{=html}
 <pre class="code rsplus">
 summary(MLMA_lnRR)
 </pre>
-
+```
 ```{r MLMA lnRR output}
 summary(MLMA_lnRR) # model output of MLMA of lnRR 
 ```
 
-The model output of the fitted MLMA of SMD: 
+The model output of the fitted MLMA of SMD:
 
+```{=html}
 <pre class="code rsplus">
 summary(MLMA_SMD)
 </pre>
-
+```
 ```{r MLMA SMD output}
 summary(MLMA_SMD) # model output of MLMA of SMD
 ```
 
-The model output might look overwhelming if you have not used `rma.mv()` to fit such a complex meta-analytic model before meeting this tutorial. Do not worry. Let's teach you how to properly interpret each piece in the model output of in order of appearance, using `MLMA_lnRR` as an example.
+The model output might look overwhelming if you have not used `rma.mv()`
+to fit such a complex meta-analytic model before meeting this tutorial.
+Do not worry. Let's teach you how to properly interpret each piece in
+the model output of in order of appearance, using `MLMA_lnRR` as an
+example.
 
-- **Multivariate Meta-Analysis Model (k = 532; method: REML)**  
+-   **Multivariate Meta-Analysis Model (k = 532; method: REML)**
 
 The first line tells us:
 
 `k = 532` = the number of effect sizes (*k*) fed to the model,
 
-`method: REML` = the restricted likelihood maximum (REML) method was specified as estimation procedure for model fitting to obtain model estimates (e.g., variance components, overall effects). 
+`method: REML` = the restricted likelihood maximum (REML) method was
+specified as estimation procedure for model fitting to obtain model
+estimates (e.g., variance components, overall effects).
 
-- **Fit statistics**  
+-   **Fit statistics**
 
-The next line contains several fit statistics, which can represent the model quality (e.g., model comparison and selection), including:
+The next line contains several fit statistics, which can represent the
+model quality (e.g., model comparison and selection), including:
 
 `logLik` = restricted log-likelihood of the fitted model,
 
-`Deviance` = goodness-of-fit statistic of the fitted model (which is a generalization of the idea of using the sum of squares of residuals (SSR) to cases where model-fitting is achieved by maximum likelihood),
+`Deviance` = goodness-of-fit statistic of the fitted model (which is a
+generalization of the idea of using the sum of squares of residuals
+(SSR) to cases where model-fitting is achieved by maximum likelihood),
 
 `AIC` = Akaike information criterion score of the fitted model,
 
-`BIC` = Bayesian information criterion, and, 
+`BIC` = Bayesian information criterion, and,
 
-`AICc` = AIC corrected for small sample sizes. 
+`AICc` = AIC corrected for small sample sizes.
 
-- **Variance Components**  
+-   **Variance Components**
 
-`sigma^2.1` =  the estimated between-study variance $\sigma_{u}^2$ for the random effect `Study_ID`,
+`sigma^2.1` = the estimated between-study variance $\sigma_{u}^2$ for
+the random effect `Study_ID`,
 
-`sigma^2.2` = the estimated within-study variance $\sigma_{w}^2$ for the random effect `ES_ID `,
+`sigma^2.2` = the estimated within-study variance $\sigma_{w}^2$ for the
+random effect `ES_ID`,
 
-`estim` =  the estimated amount of corresponding variance components,
+`estim` = the estimated amount of corresponding variance components,
 
 `sqrt` = standard deviation of variance components,
 
 `nlvls` = the number of levels for each random effect,
 
-`fixed` = whether to fix the variance components at a given value. This is useful for sensitivity analyses, likelihood ratio tests, or for imposing a desired variance-covariance structure on the data; `no` means the variance components are not fixed and estimated from the data,
+`fixed` = whether to fix the variance components at a given value. This
+is useful for sensitivity analyses, likelihood ratio tests, or for
+imposing a desired variance-covariance structure on the data; `no` means
+the variance components are not fixed and estimated from the data,
 
-`factor` = the name of the variables we supply to argument `random` to specify the random effects.
+`factor` = the name of the variables we supply to argument `random` to
+specify the random effects.
 
-- **Test for Heterogeneity**  
+-   **Test for Heterogeneity**
 
-`Q(df = 531) = 10070.1835` = The test statistic of the Cochran’s Q-test, which tests whether effect sizes are consistent. Under the null hypothesis, the test statistic follows a chi-square distribution with 531 degree of freedom,
+`Q(df = 531) = 10070.1835` = The test statistic of the Cochran’s Q-test,
+which tests whether effect sizes are consistent. Under the null
+hypothesis, the test statistic follows a chi-square distribution with
+531 degree of freedom,
 
-`p-val < < .0001` = The null hypothesis is rejectd and thus effect sizes are heterogeneous. The p-value for the test is based on a chi-square distribution with 531 degree of freedom.
+`p-val < < .0001` = The null hypothesis is rejectd and thus effect sizes
+are heterogeneous. The p-value for the test is based on a chi-square
+distribution with 531 degree of freedom.
 
-- **Model Results**  
+-   **Model Results**
 
-The estimated overall effect, confidence intervals, and corresponding model inference related.
+The estimated overall effect, confidence intervals, and corresponding
+model inference related.
 
-`estimate` = the estimate of the overall effect; ($\mu_{lnRR}$ or $\mu_{SMD}$ in Equation 10, 
+`estimate` = the estimate of the overall effect; ($\mu_{lnRR}$ or
+$\mu_{SMD}$ in Equation 10,
 
-`se` = the standard error of the estimate; here, it is ($\text SE[\mu_{lnRR}]$ or $\text SE[\mu_{SMD}]$), 
+`se` = the standard error of the estimate; here, it is
+($\text SE[\mu_{lnRR}]$ or $\text SE[\mu_{SMD}]$),
 
-`tval` = the value of test statistic (in our case: t-value); a t-distribution with *k*−*p* degrees of freedom to test the overall effect and compute (95% by default) confidence intervals, 
+`tval` = the value of test statistic (in our case: t-value); a
+t-distribution with *k*−*p* degrees of freedom to test the overall
+effect and compute (95% by default) confidence intervals,
 
-`df` = degrees of freedom of the t-distribution to test the the overall effect and compute (95% by default) confidence intervals,
+`df` = degrees of freedom of the t-distribution to test the the overall
+effect and compute (95% by default) confidence intervals,
 
-`pval` = the corresponding p value from the test, 
+`pval` = the corresponding p value from the test,
 
-`ci.lb` = lower boundary of (95% by default) confidence intervals, 
+`ci.lb` = lower boundary of (95% by default) confidence intervals,
 
 `ci.Ub` = upper boundary of (95% by default) confidence intervals.
 
+**Accounting for the correlated errors in the MLMA:**
 
-__Accounting for the correlated errors in the MLMA:__
+As explained in the main text, there exists correlated sampling errors
+($e_{[lnRR]ij}$ or $e_{[SMD]ij}$), which might distort the statistical
+inferences on the overall effect. Although the MLMA assumes independent
+sampling errors, we can incorporate a sampling variance-covariance
+matrix (Equation 10) into the MLMA to explicitly capture the non-zero
+sampling covariance ($Cov[e_{ij},e_{hj}]=\rho_{sih}s_{ij}s_{hj}$).
 
-As explained in the main text, there exists correlated sampling errors ($e_{[lnRR]ij}$ or $e_{[SMD]ij}$), which might distort the statistical inferences on the overall effect. Although the MLMA assumes independent sampling errors, we can incorporate a sampling variance-covariance matrix (Equation 10) into the MLMA to explicitly capture the non-zero sampling covariance ($Cov[e_{ij},e_{hj}]=\rho_{sih}s_{ij}s_{hj}$). 
-
-We can use the function `vcalc()` in `metafor` to construct such a sampling variance-covariance matrix, assuming that the sampling errors within the same study are correlated with a constant correlation coefficient $\rho_{ih}$ (say, 0.5; see below for the sensitivity analysis). Let's construct the sampling variance-covariance matrix for $lnRR$ and $SMD$, respectively.
+We can use the function `vcalc()` in `metafor` to construct such a
+sampling variance-covariance matrix, assuming that the sampling errors
+within the same study are correlated with a constant correlation
+coefficient $\rho_{ih}$ (say, 0.5; see below for the sensitivity
+analysis). Let's construct the sampling variance-covariance matrix for
+$lnRR$ and $SMD$, respectively.
 
 For $lnRR$:
+
+```{=html}
 <pre class="code rsplus">
 VCV_lnRR <- vcalc(vi = V_lnRR, # sampling variances of lnRR that are correlated within the same study;
                   cluster = Study_ID, # study identity;
@@ -402,8 +519,10 @@ VCV_lnRR <- vcalc(vi = V_lnRR, # sampling variances of lnRR that are correlated 
                   rho = 0.5 # assuming that the effect sizes within the same study are correlated with rho = 0.5
                   )
 </pre>
-
+```
 For $SMD$:
+
+```{=html}
 <pre class="code rsplus">
 VCV_SMD <- vcalc(vi = V_SMD, # sampling variances of SMD that are correlated within the same study;
                  cluster = Study_ID, # study identity;
@@ -412,7 +531,7 @@ VCV_SMD <- vcalc(vi = V_SMD, # sampling variances of SMD that are correlated wit
                  rho = 0.5 # assuming that the effect sizes within the same study are correlated with rho = 0.5
                 )
 </pre>
-
+```
 ```{r MLMA VCV, results='hide'}
 # assume that the sampling variances within studies are correlated with rho = 0.5
 ## lnRR
@@ -432,19 +551,30 @@ VCV_SMD <- vcalc(vi = V_SMD, # sampling variances of SMD that are correlated wit
 
 ```
 
-In the above syntex, setting `rho = 0.5` means we assume that sampling errors within the same study are correlated with $\rho$ = 0.5. 
+In the above syntax, setting `rho = 0.5` means we assume that sampling
+errors within the same study are correlated with $\rho$ = 0.5.
 
-There are 3 points worth noting. 
+There are 3 points worth noting.
 
-**First**, we recommend performing a sensitivity analysis to examine the extent to which the point estimate of the overall effect is sensitive to the arbitrarily assumed `rho = 0.5`. 
+**First**, we recommend performing a sensitivity analysis to examine the
+extent to which the point estimate of the overall effect is sensitive to
+the arbitrarily assumed `rho = 0.5`.
 
-**Second**, we recommend using robust variance estimation (RVE) to guard against the arbitrarily assumed `rho = 0.5` used for constructing sampling variance-covariance matrix, thereby ensuring the valid statistical inferences on the overall effect (details see below). 
+**Second**, we recommend using robust variance estimation (RVE) to guard
+against the arbitrarily assumed `rho = 0.5` used for constructing
+sampling variance-covariance matrix, thereby ensuring the valid
+statistical inferences on the overall effect (details see below).
 
-**Third**, if the imputed sampling variance-covariance matrix is non-positive definite (or, equivalently, not invertible), the corresponding model output should be interpreted with caution.
+**Third**, if the imputed sampling variance-covariance matrix is
+non-positive definite (or, equivalently, not invertible), the
+corresponding model output should be interpreted with caution.
 
-Now, let's incorporate the imputed sampling variance-covariance into the MLMA of lnRR together with SMD:
+Now, let's incorporate the imputed sampling variance-covariance into the
+MLMA of lnRR together with SMD:
 
 The MLMA using $lnRR$ as the effect size measure:
+
+```{=html}
 <pre class="code rsplus">
 mod2_lnRR <- rma.mv(yi = lnRR, # specify lnRR as the effect size measure
                     V = VCV_lnRR, # specify lnRR's sampling variance-covariance matrix;
@@ -454,9 +584,11 @@ mod2_lnRR <- rma.mv(yi = lnRR, # specify lnRR as the effect size measure
                     method = "REML", # restricted likelihood maximum is assigned as the estimator for variance components as suggested;
                     data = dat_lnRR # dataset using lnRR as the effect size measure
                     )
-</pre>                  
-
+</pre>
+```
 The MLMA using $SMD$ as the effect size measure:
+
+```{=html}
 <pre class="code rsplus">
 mod2_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure
                    V = VCV_SMD, # specify SMD's sampling variance-covariance matrix;
@@ -467,7 +599,7 @@ mod2_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure
                    data = dat_SMD # dataset using SMD as the effect size measure
                    )
 </pre>
-
+```
 ```{r fit MLMA + VCV of lnRR and SMD, results='hide', warning=FALSE}
 # fit Equation 10
 ## MLMA of lnRR
@@ -495,34 +627,47 @@ mod2_SMD <- rma.mv(yi = SMD, # specify SMD as the effect size measure
 ```
 
 The corresponding model output for the fitted MLMA of lnRR:
+
+```{=html}
 <pre class="code rsplus">
 summary(mod2_lnRR)
 </pre>
-
+```
 ```{r MLMA with VCV lnRR output}
 summary(mod2_lnRR) # model output of MLMA with VCV of lnRR 
 ```
 
 The corresponding model output for the fitted MLMA of SMD:
+
+```{=html}
 <pre class="code rsplus">
 summary(mod2_SMD)
 </pre>
-
+```
 ```{r MLMA with VCV SMD output}
 summary(mod2_SMD) # model output of MLMA with VCV of SMD 
 ```
 
-We recommend conducting a sensitivity analysis to examine the extent to which the overall effect derived from the MLMA of lnRR and SMD is sensitive to the assumption of sampling correlation values ($\rho_{s}$) used for constructing sampling variance-covariance matrix.
+We recommend conducting a sensitivity analysis to examine the extent to
+which the overall effect derived from the MLMA of lnRR and SMD is
+sensitive to the assumption of sampling correlation values ($\rho_{s}$)
+used for constructing sampling variance-covariance matrix.
 
-First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these values arbitrarily; you can set them based on your expertise in your field):
+First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these
+values arbitrarily; you can set them based on your expertise in your
+field):
 
+```{=html}
 <pre class="code rsplus">
 rho_range <- c(0.3, 0.5, 0.7)
 </pre>
-
-Then, we write a function to help repeatedly run the specified model, changing $\rho_{s}$ at a time.
+```
+Then, we write a function to help repeatedly run the specified model,
+changing $\rho_{s}$ at a time.
 
 Conduct the sensitivity analysis on $lnRR$:
+
+```{=html}
 <pre class="code rsplus">
 MLMAlnRR_VCV_range <- list() # repeatedly run the specified model with varying rho
 
@@ -542,8 +687,10 @@ MLMAlnRR_VCV_range[[i]] <- rma.mv(yi = lnRR,
 )
 }
 </pre>
-
+```
 Conduct the sensitivity analysis on $SMD$:
+
+```{=html}
 <pre class="code rsplus">
 MLMASMD_VCV_range <- list() # repeatedly run the specified model with varying rho
 
@@ -563,7 +710,7 @@ MLMASMD_VCV_range[[i]] <- rma.mv(yi = SMD,
 )
 }
 </pre>
-
+```
 ```{r sensitivity of rho in MLMA, results='hide',warning=FALSE}
 # assume a range values of rho
 rho_range <- c(0.3, 0.5, 0.7)
@@ -613,10 +760,16 @@ MLMASMD_VCV_range[[i]] <- rma.mv(yi = SMD,
 }
 ```
 
-We summarize the results of the sensitivity analysis in **Table S4** ($lnRR$) and **Table S5** ($SMD$). While the null-hypothesis test of the overall effect of $lnRR$ does not change with the changing of $\rho_{s}$ values, the point estimates are sensitive to different assumption of $\rho_{s}$ values. The results corresponding to $SMD$ are robust to different assumption of $\rho_{s}$ values.
+We summarize the results of the sensitivity analysis in **Table S4**
+($lnRR$) and **Table S5** ($SMD$). While the null-hypothesis test of the
+overall effect of $lnRR$ does not change with the changing of $\rho_{s}$
+values, the point estimates are sensitive to different assumption of
+$\rho_{s}$ values. The results corresponding to $SMD$ are robust to
+different assumption of $\rho_{s}$ values.
 
-__Table S4__
-Sensitivity analysis examining the robustness of the overall effect measured as $lnRR$ to the assumption of $\rho_{s}$ values in the multilevel meta-analysis.  
+**Table S4** Sensitivity analysis examining the robustness of the
+overall effect measured as $lnRR$ to the assumption of $\rho_{s}$ values
+in the multilevel meta-analysis.
 
 ```{r Table S4}
 t4 <- data.frame(rho  = rho_range,
@@ -631,8 +784,9 @@ colnames(t4) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard err
 t4 %>% dfround(4) %>% DT::datatable()
 ```
 
-__Table S5__
-Sensitivity analysis examining the robustness of the overall effect measured as $SMD$ to the assumption of $\rho_{s}$ values in the multilevel meta-analysis.  
+**Table S5** Sensitivity analysis examining the robustness of the
+overall effect measured as $SMD$ to the assumption of $\rho_{s}$ values
+in the multilevel meta-analysis.
 
 ```{r Table S5}
 t5 <- data.frame(rho  = rho_range,
@@ -647,11 +801,17 @@ colnames(t5) <- c("Sampling correlation", "Overall effect (SMD)", "Standard erro
 t5 %>% dfround(4) %>% DT::datatable()
 ```
 
-
 # Bivariate multilevel meta-analysis of lnRR and SMD
 
-In this section, we will show how to implement the bivariate multilevel meta-analysis (BMLMA) of lnRR and SMD (Equation 11) in `R`. We will need to use the function `rma.mv()` in `metafor`. The function `rma.mv()` requires a long format to fit the bivariate meta-analysis (or, more generally, multivariate meta-analysis). Let's make a long format by combining the dataset using $lnRR$ as effect size measure (`dat_lnRR`) and the dataset using $SMD$ as effect size measure (`dat_SMD`):
+In this section, we will show how to implement the bivariate multilevel
+meta-analysis (BMLMA) of lnRR and SMD (Equation 11) in `R`. We will need
+to use the function `rma.mv()` in `metafor`. The function `rma.mv()`
+requires a long format to fit the bivariate meta-analysis (or, more
+generally, multivariate meta-analysis). Let's make a long format by
+combining the dataset using $lnRR$ as effect size measure (`dat_lnRR`)
+and the dataset using $SMD$ as effect size measure (`dat_SMD`):
 
+```{=html}
 <pre class="code rsplus">
 dat_all <- data.frame(Study_ID = c(dat_lnRR$Study_ID, dat_SMD$Study_ID),
                       ES_ID = c(dat_lnRR$ES_ID, dat_SMD$ES_ID),
@@ -660,7 +820,7 @@ dat_all <- data.frame(Study_ID = c(dat_lnRR$Study_ID, dat_SMD$Study_ID),
                       ES_measure = c(rep("lnRR", nrow(dat_lnRR)), rep("SMD", nrow(dat_SMD)))
 )
 </pre>
-
+```
 ```{r BMLMA data}
 dat_all <- data.frame(Study_ID = c(dat_lnRR$Study_ID, dat_SMD$Study_ID),
                       ES_ID = c(dat_lnRR$ES_ID, dat_SMD$ES_ID),
@@ -670,10 +830,31 @@ dat_all <- data.frame(Study_ID = c(dat_lnRR$Study_ID, dat_SMD$Study_ID),
 )
 ```
 
-Recall that the model specification of the BMLMA of lnRR and SMD (Equation 11) has three key parts: sampling variance-covariance (Equation 10), between-study variance-covariance (Equation 12), and within-study variance-covariance (Equation 13). The between- and within-study variance-covariances are used to account for the correlation/covariance between the $lnRR$ and $SMD$ parameters ($Cov[u_{[lnRR]j},u_{[SMD]j}]=\rho_{u}u_{[lnRR]j}u_{[SMD]j}$ and $Cov[w_{[lnRR]j},w_{[SMD]j}]=\rho_{w}w_{[lnRR]j}w_{[SMD]j}$), while the sampling variance-covariance is used to account for the correlation/covariance between the $lnRR$ and $SMD$ estimates (to be more precise, sampling errors) ($Cov[e_{[lnRR]j},e_{[SMD]j}]=\rho_{s}s_{[lnRR]j}s_{[SMD]j}$). The utilization of the correlation between the lnRR and SMD, in turn, can increase the precision of the overall effect estimation, a concept known as borrowing of strength.
+Recall that the model specification of the BMLMA of lnRR and SMD
+(Equation 11) has three key parts: sampling variance-covariance
+(Equation 10), between-study variance-covariance (Equation 12), and
+within-study variance-covariance (Equation 13). The between- and
+within-study variance-covariances are used to account for the
+correlation/covariance between the $lnRR$ and $SMD$ parameters
+($Cov[u_{[lnRR]j},u_{[SMD]j}]=\rho_{u}u_{[lnRR]j}u_{[SMD]j}$ and
+$Cov[w_{[lnRR]j},w_{[SMD]j}]=\rho_{w}w_{[lnRR]j}w_{[SMD]j}$), while the
+sampling variance-covariance is used to account for the
+correlation/covariance between the $lnRR$ and $SMD$ estimates (to be
+more precise, sampling errors)
+($Cov[e_{[lnRR]j},e_{[SMD]j}]=\rho_{s}s_{[lnRR]j}s_{[SMD]j}$). The
+utilization of the correlation between the lnRR and SMD, in turn, can
+increase the precision of the overall effect estimation, a concept known
+as borrowing of strength.
 
-Firstly, let's construct the sampling variance-covariance matrix. As demonstrated in the example of multilevel meta-analysis, we will use the function `vcalc()` in `metafor`. Given that the sampling correlation ($\rho_{s}$) between the estimates of $lnRR$ and $SMD$ is not reported in the literature, we assume a constant value if 0.5 (see below for how to relax this assumption). The syntax for imputing the sampling variance-covariance matrix is as follows:
+Firstly, let's construct the sampling variance-covariance matrix. As
+demonstrated in the example of multilevel meta-analysis, we will use the
+function `vcalc()` in `metafor`. Given that the sampling correlation
+($\rho_{s}$) between the estimates of $lnRR$ and $SMD$ is not reported
+in the literature, we assume a constant value if 0.5 (see below for how
+to relax this assumption). The syntax for imputing the sampling
+variance-covariance matrix is as follows:
 
+```{=html}
 <pre class="code rsplus">
 VCV <- vcalc(vi = V_ES, # sampling variances of lnRR and SMD that are correlated within the same study;
              cluster = Study_ID, # study identity;
@@ -683,7 +864,7 @@ VCV <- vcalc(vi = V_ES, # sampling variances of lnRR and SMD that are correlated
              nearpd = TRUE # specify whether impose the non positive definite VCV matrix (not invertible) to the nearest positive semi-definite matrix 
              )
 </pre>
-
+```
 ```{r BMLMA VCV, results='hide', warning=FALSE}
 # assume that the the estimated lnRR and SMD  are correlated with rho = 0.5
 VCV <- vcalc(vi = V_ES, # sampling variances of lnRR and SMD that are correlated within the same study;
@@ -695,21 +876,57 @@ VCV <- vcalc(vi = V_ES, # sampling variances of lnRR and SMD that are correlated
              )
 ```
 
-In the above syntax, setting `rho = 0.5` means we assume that the estimated $lnRR$ and $SMD$ within the same study are correlated with $\rho$ = 0.5. Again, there are 3 points worth noting. Given their importance, we would like to recall them.
+In the above syntax, setting `rho = 0.5` means we assume that the
+estimated $lnRR$ and $SMD$ within the same study are correlated with
+$\rho$ = 0.5. Again, there are 3 points worth noting. Given their
+importance, we would like to recall them.
 
-**First**, we recommend performing a sensitivity analysis to examine the extent to which the magnitude of the overall effect is sensitive to a range of $\rho$ values. 
+**First**, we recommend performing a sensitivity analysis to examine the
+extent to which the magnitude of the overall effect is sensitive to a
+range of $\rho$ values.
 
-**Second**, we recommend using robust variance estimation (RVE) to guard against the arbitrarily assumed `rho = 0.5` used for constructing sampling variance-covariance matrix, thereby ensuring the valid statistical inferences on the overall effect (details see below). 
+**Second**, we recommend using robust variance estimation (RVE) to guard
+against the arbitrarily assumed `rho = 0.5` used for constructing
+sampling variance-covariance matrix, thereby ensuring the valid
+statistical inferences on the overall effect (details see below).
 
-**Third**, if the imputed sampling variance-covariance matrix is non-positive definite (or, equivalently, not invertible), the corresponding model output should be interpreted with caution.
+**Third**, if the imputed sampling variance-covariance matrix is
+non-positive definite (or, equivalently, not invertible), the
+corresponding model output should be interpreted with caution.
 
-Next, let's show how to account for the correlated random effects. The argument `random` allows us to specify the correlated random effects: starts with `~ inner variable`, followed by a `|`, then an identifier `outer variable`. To be more precise, `~ inner variable | outer variable` means adding correlated effects for each level of `inner variable` within each level of `outer variable`. In our case, we have two correlated random effects: `~ ES_measure | Study_ID` and `~ ES_measure | ES_ID`. We then use `list()` to put two random effects together: `random = list(~ ES_measure | Study_ID, ~ ES_measure | ES_ID)`, which indicates the effect sizes with the same level of the study identity (`Study_ID`) and observation identities (`ES_ID`) share correlated random effects corresponding to the variables (`ES_measure`) related to the two effect size measures $lnRR$ and $SMD$, while effect sizes with different levels of the study identity and observation identity are statistically independent. 
+Next, let's show how to account for the correlated random effects. The
+argument `random` allows us to specify the correlated random effects:
+starts with `~ inner variable`, followed by a `|`, then an identifier
+`outer variable`. To be more precise,
+`~ inner variable | outer variable` means adding correlated effects for
+each level of `inner variable` within each level of `outer variable`. In
+our case, we have two correlated random effects:
+`~ ES_measure | Study_ID` and `~ ES_measure | ES_ID`. We then use
+`list()` to put two random effects together:
+`random = list(~ ES_measure | Study_ID, ~ ES_measure | ES_ID)`, which
+indicates the effect sizes with the same level of the study identity
+(`Study_ID`) and observation identities (`ES_ID`) share correlated
+random effects corresponding to the variables (`ES_measure`) related to
+the two effect size measures $lnRR$ and $SMD$, while effect sizes with
+different levels of the study identity and observation identity are
+statistically independent.
 
-The argument `struct` will be used to impose the variance-covariance structure associated with the inner variable (`ES_measure`). According to Equations 10 and 11, the variable `ES_measure` should be specified as an unstructured variance-covariance matrix (or heteroscedastic compound symmetric structure because`ES_measure` only has two levels: $lnRR$ and $SMD$).
+The argument `struct` will be used to impose the variance-covariance
+structure associated with the inner variable (`ES_measure`). According
+to Equations 10 and 11, the variable `ES_measure` should be specified as
+an unstructured variance-covariance matrix (or heteroscedastic compound
+symmetric structure because`ES_measure` only has two levels: $lnRR$ and
+$SMD$).
 
-For the fixed effect part, the variable `ES_measure` needs to be supplied to the argument `mods` using following formula: starting with a tilde `~`, followed by the name of the variable: `mods = ~ ES_measure`. We also use `-1` to remove the intercept (non-contrast coding).
+For the fixed effect part, the variable `ES_measure` needs to be
+supplied to the argument `mods` using following formula: starting with a
+tilde `~`, followed by the name of the variable: `mods = ~ ES_measure`.
+We also use `-1` to remove the intercept (non-contrast coding).
 
-The complete syntax to fit the bivariate multilevel meta-analysis of lnRR and SMD (Equation 7) is as follows:
+The complete syntax to fit the bivariate multilevel meta-analysis of
+lnRR and SMD (Equation 7) is as follows:
+
+```{=html}
 <pre class="code rsplus">
 BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in our case);
                 V = VCV, # specify the imputed variance-covariance matrix;
@@ -723,7 +940,7 @@ BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in 
                 sparse = T
                )
 </pre>
-
+```
 ```{r fit BMLMA of lnRR and SMD, warning=FALSE}
 BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in our case);
                 V = VCV, # specify the imputed variance-covariance matrix;
@@ -738,29 +955,38 @@ BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in 
                )
 ```
 
-Let's have a look at the the model output from the fitted BMLMA of lnRR and SMD (object `BMLMA`). `summary()` function can return us the model output:
+Let's have a look at the the model output from the fitted BMLMA of lnRR
+and SMD (object `BMLMA`). `summary()` function can return us the model
+output:
 
+```{=html}
 <pre class="code rsplus">
 summary(BMLMA)
 </pre>
-
+```
 ```{r BMLMA output}
 summary(BMLMA) # model output of BMLMA of lnRR and SMD
 ```
 
-If you understand the interpretation of the above MLMA of lnRR and SMD well, I guess you will be able to interpret the model output of the BMLMA for lnRR and SMD yourself. Anyway, let's look at the results in the order they appear.
+If you understand the interpretation of the above MLMA of lnRR and SMD
+well, I guess you will be able to interpret the model output of the
+BMLMA for lnRR and SMD yourself. Anyway, let's look at the results in
+the order they appear.
 
-- **Multivariate Meta-Analysis Model details**  
+-   **Multivariate Meta-Analysis Model details**
 
 The first line tells us:
 
 `k = 1075` = the number of effect sizes (*k*) fed to the model,
 
-`method: REML` = the REML method was specified as estimation procedure for model fitting to obtain model estimates (e.g., variance components, overall effects). 
+`method: REML` = the REML method was specified as estimation procedure
+for model fitting to obtain model estimates (e.g., variance components,
+overall effects).
 
-- **Fit statistics**  
+-   **Fit statistics**
 
-The next line contains several fit statistics, which can be used for model comparison or selection, including:
+The next line contains several fit statistics, which can be used for
+model comparison or selection, including:
 
 `logLik` = restricted log-likelihood of the fitted model,
 
@@ -768,114 +994,191 @@ The next line contains several fit statistics, which can be used for model compa
 
 `AIC` = Akaike information criterion score of the fitted model,
 
-`BIC` = Bayesian information criterion, and 
+`BIC` = Bayesian information criterion, and
 
-`AICc` = AIC corrected for small sample sizes. 
+`AICc` = AIC corrected for small sample sizes.
 
+-   **Variance Components**
 
-- **Variance Components**  
+The first two lines are the descriptions of the first correlated random
+effect structure.
 
-The first two lines are the descriptions of the first correlated random effect structure.
+`outer factor: Study_ID` = The first grouping variable `Study_ID`
+wherein the two types of effect size measures ($lnRR$ and $SMD$) are
+correlated. `nlvls = 214` means the variable `Study_ID` has 214 levels.
 
-`outer factor: Study_ID` = The first grouping variable `Study_ID` wherein the two types of effect size measures ($lnRR$ and $SMD$) are correlated. `nlvls = 214` means the variable `Study_ID` has 214 levels.
+`inner factor: ES_measure` = The variable `ES_measure` containing the
+correlated effect size measures ($lnRR$ and $SMD$). `nlvls = 2` means
+the variable `ES_measure` has 2 levels.
 
-`inner factor: ES_measure` = The variable `ES_measure` containing the correlated effect size measures ($lnRR$ and $SMD$). `nlvls = 2` means the variable `ES_measure` has 2 levels.
+The next three lines are the estimated first correlated variance
+components and correlations.
 
-The next three lines are the estimated first correlated variance components and correlations.
+`tau^2.1` = between-study variance of the first `level` of `ES_measure`
+(`lnRR`) $\tau_{[lnRR]}^2$ in Equation 8.
 
-`tau^2.1` =  between-study variance of the first `level` of `ES_measure` (`lnRR`) $\tau_{[lnRR]}^2$ in Equation 8.
+`tau^2.2` = within-study variance of the second `level` of `ES_measure`
+(`SMD`) $\tau_{[SMD]}^2$ in Equation 9.
 
-`tau^2.2` =  within-study variance of the second `level` of `ES_measure` (`SMD`) $\tau_{[SMD]}^2$ in Equation 9.
+`estim` = the estimated amount of corresponding variance components
+($\tau_{[lnRR]}^2$ = `0.8450` and $\tau_{[SMD]}^2$ = `0.7261`),
 
-`estim` =  the estimated amount of corresponding variance components ($\tau_{[lnRR]}^2$ = `0.8450` and $\tau_{[SMD]}^2$ = `0.7261`),
-
-`sqrt` = standard deviation of variance components ($\tau_{[lnRR]}$ = `0.9192` and $\tau_{[SMD]}$ = `0.8521`),
-
-`k.lvl` = the number of levels for each random effect,
-
-`fixed` = whether to fix the variance components at a given value. This is useful for sensitivity analyses, likelihood ratio tests, or for imposing a desired variance-covariance structure on the data; `no` means the variance components are not fixed and estimated from the data,
-
-`level ` = the levels of the inner random effect `inner factor: ES_measure`.
-
-Then, the estimated correlation matrix of the first correlated random effect comes to us.
-
-`rho.lnRR` = the estimated correlation within the same level of the first grouping variable (`Study_ID`) between the `lnRR` parameter and itself (`1`), and between the `lnRR` parameter and the `SMD` parameter (`0.8553`),
-
-`rho.SMD` = the estimated correlation within the same level of the first grouping variable (`Study_ID`) between the `SMD` parameter and the `lnRR` parameter (data not shown given it is a symmetric matrix), and between the `SMD` parameter and itself (`1`)
-
-The following two lines are the descriptions of the second correlated random effect structure.
-
-`outer factor: Study_ID` = The first grouping variable `Study_ID` wherein the two types of effect size measures ($lnRR$ and $SMD$) are correlated. `nlvls = 214` means the variable `Study_ID` has 214 levels.
-
-`inner factor: ES_measure` = The variable `ES_measure` containing the correlated effect size measures ($lnRR$ and $SMD$). `nlvls = 2` means the variable `ES_measure` has 2 levels.
-
-The next three lines are the estimated first correlated variance components and correlations.
-
-`gamma^2.1` =  between-study variance of the first `level` of `ES_measure` (`lnRR`) $\gamma_{[lnRR]}^2$ in Equation 8.
-
-`gamma^2.2` =  within-study variance of the second `level` of `ES_measure` (`SMD`) $\gamma_{[SMD]}^2$ in Equation 9.
-
-`estim` =  the estimated amount of corresponding variance components ($\gamma_{[lnRR]}^2$ = `0.5219` and $\gamma_{[SMD]}^2$ = `0.6938`),
-
-`sqrt` = standard deviation of variance components ($\gamma_{[lnRR]}$ = `0.7225` and $\gamma_{[SMD]}$ = `0.8330`),
+`sqrt` = standard deviation of variance components ($\tau_{[lnRR]}$ =
+`0.9192` and $\tau_{[SMD]}$ = `0.8521`),
 
 `k.lvl` = the number of levels for each random effect,
 
-`fixed` = whether to fix the variance components at a given value. This is useful for sensitivity analyses, likelihood ratio tests, or for imposing a desired variance-covariance structure on the data; `no` means the variance components are not fixed and estimated from the data,
+`fixed` = whether to fix the variance components at a given value. This
+is useful for sensitivity analyses, likelihood ratio tests, or for
+imposing a desired variance-covariance structure on the data; `no` means
+the variance components are not fixed and estimated from the data,
 
-`level ` = the levels of the inner random effect `inner factor: ES_measure`.
+`level` = the levels of the inner random effect
+`inner factor: ES_measure`.
 
-Next, we will see the estimated correlation matrix of the second correlated random effect.
+Then, the estimated correlation matrix of the first correlated random
+effect comes to us.
 
-`phi.lnRR` = the estimated correlation within the same level of the second grouping variable (`ES_ID`) between the `lnRR` parameter and itself (`1`), and between the `lnRR` parameter and the `SMD` parameter (`0.8741`),
+`rho.lnRR` = the estimated correlation within the same level of the
+first grouping variable (`Study_ID`) between the `lnRR` parameter and
+itself (`1`), and between the `lnRR` parameter and the `SMD` parameter
+(`0.8553`),
 
-`phi.SMD` = the estimated correlation within the same level of the second grouping variable (`ES_ID`) between the `SMD` parameter and the `lnRR` parameter (data not shown given it is a symmetric matrix), and between the `SMD` parameter and itself (`1`).
+`rho.SMD` = the estimated correlation within the same level of the first
+grouping variable (`Study_ID`) between the `SMD` parameter and the
+`lnRR` parameter (data not shown given it is a symmetric matrix), and
+between the `SMD` parameter and itself (`1`)
 
-- **Test for Residual Heterogeneity**  
+The following two lines are the descriptions of the second correlated
+random effect structure.
 
-`QE(df = 1073) = 14365490976.5589` = The test statistic of the Cochran’s Q-test of the residual heterogeneity, which tests whether effect sizes are consistent. Under the null hypothesis, the test statistic follows a chi-square distribution with 1073 degree of freedom,
+`outer factor: Study_ID` = The first grouping variable `Study_ID`
+wherein the two types of effect size measures ($lnRR$ and $SMD$) are
+correlated. `nlvls = 214` means the variable `Study_ID` has 214 levels.
 
-`p-val < < .0001` = The null hypothesis is rejected and thus effect sizes are heterogeneous.
+`inner factor: ES_measure` = The variable `ES_measure` containing the
+correlated effect size measures ($lnRR$ and $SMD$). `nlvls = 2` means
+the variable `ES_measure` has 2 levels.
 
-- **Test of Moderators (coefficients 1:2)**
+The next three lines are the estimated first correlated variance
+components and correlations.
 
-`F(df1 = 2, df2 = 1073) = 11.4594` = the test statistic of the omnibus test (the so-called QM-test) of the overall effect measured as $lnRR$ and $SMD$. Under the joint null hypothesis, the test statistic follows asymptotically an F-distribution with `2` and `1073` degrees of freedom,
+`gamma^2.1` = between-study variance of the first `level` of
+`ES_measure` (`lnRR`) $\gamma_{[lnRR]}^2$ in Equation 8.
 
-`p-val < < .0001` = the joint null hypothesis is rejected and thus at least one overall effect (other measured as $lnRR$ or $SMD$) is statistically significant.
+`gamma^2.2` = within-study variance of the second `level` of
+`ES_measure` (`SMD`) $\gamma_{[SMD]}^2$ in Equation 9.
 
-- **Model Results**  
+`estim` = the estimated amount of corresponding variance components
+($\gamma_{[lnRR]}^2$ = `0.5219` and $\gamma_{[SMD]}^2$ = `0.6938`),
 
-The estimated overall effect, confidence intervals, and corresponding model inference related stats.
+`sqrt` = standard deviation of variance components ($\gamma_{[lnRR]}$ =
+`0.7225` and $\gamma_{[SMD]}$ = `0.8330`),
 
-`estimate` = the estimate of overall effect ($\mu_{lnRR}$ = `0.0179` under `ES_measurelnRR` and  $\mu_{SMD}$ = `-0.2987` under `ES_measureSMD`), 
+`k.lvl` = the number of levels for each random effect,
 
-`se` = the standard error of the estimate; here, it is ($\text SE[\mu_{lnRR}]$ = `0.0799` and $\text SE[\mu_{SMD}]$ = `0.0919`), 
+`fixed` = whether to fix the variance components at a given value. This
+is useful for sensitivity analyses, likelihood ratio tests, or for
+imposing a desired variance-covariance structure on the data; `no` means
+the variance components are not fixed and estimated from the data,
 
-`tval` = the value of test statistic (in our case: t-value); a t-distribution with `1073` degrees of freedom to test the overall effect and compute (95% by default) confidence intervals, 
+`level` = the levels of the inner random effect
+`inner factor: ES_measure`.
 
-`df` = degrees of freedom of the t-distribution to test the the overall effect and compute (95% by default) confidence intervals,
+Next, we will see the estimated correlation matrix of the second
+correlated random effect.
 
-`pval` = the corresponding p value from the test; in our case, `0.8225` for the test of overall effect measured as $lnRR$ and `0.0012` for the the test of overall effect measured as $SMD$, 
+`phi.lnRR` = the estimated correlation within the same level of the
+second grouping variable (`ES_ID`) between the `lnRR` parameter and
+itself (`1`), and between the `lnRR` parameter and the `SMD` parameter
+(`0.8741`),
 
-`ci.lb` = lower boundary of (95% by default) confidence intervals, 
+`phi.SMD` = the estimated correlation within the same level of the
+second grouping variable (`ES_ID`) between the `SMD` parameter and the
+`lnRR` parameter (data not shown given it is a symmetric matrix), and
+between the `SMD` parameter and itself (`1`).
 
-`ci.Ub` = upper boundary of (95% by default) confidence intervals. 
+-   **Test for Residual Heterogeneity**
 
-This example happens to show that using different effect size measures might lead to different conclusions. If using $lnRR$, there is no overall effect, while using $SMD$ yields an overall effect. To make matters worse, the $lnRR$ and $SMD$ have different signs (see the main text for the explanations). This creates room for analytic flexibility or “researcher degrees of freedom”. The analysts may (un)intentionally search methodological specifications to align with their desired findings, leading to confirmation bias (i.e., seeing what they want to see) and the risk of erroneously concluding the null effect as the true effect (i.e., a high false positive rate).
+`QE(df = 1073) = 14365490976.5589` = The test statistic of the Cochran’s
+Q-test of the residual heterogeneity, which tests whether effect sizes
+are consistent. Under the null hypothesis, the test statistic follows a
+chi-square distribution with 1073 degree of freedom,
 
+`p-val < < .0001` = The null hypothesis is rejected and thus effect
+sizes are heterogeneous.
 
-**Sensitivity analysis of the imputed sampling variance-covariance matrix**
+-   **Test of Moderators (coefficients 1:2)**
 
-Next, we show how to perform a sensitivity analysis to examine the extent to which the overall effect derived from the BMLMA of lnRR and SMD is sensitive to the assumption of sampling correlation values ($\rho_{s}$) used for constructing sampling variance-covariance matrix.
+`F(df1 = 2, df2 = 1073) = 11.4594` = the test statistic of the omnibus
+test (the so-called QM-test) of the overall effect measured as $lnRR$
+and $SMD$. Under the joint null hypothesis, the test statistic follows
+asymptotically an F-distribution with `2` and `1073` degrees of freedom,
 
-First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these values arbitrarily; you can set them based on your expertise in your field):
+`p-val < < .0001` = the joint null hypothesis is rejected and thus at
+least one overall effect (other measured as $lnRR$ or $SMD$) is
+statistically significant.
 
+-   **Model Results**
+
+The estimated overall effect, confidence intervals, and corresponding
+model inference related stats.
+
+`estimate` = the estimate of overall effect ($\mu_{lnRR}$ = `0.0179`
+under `ES_measurelnRR` and $\mu_{SMD}$ = `-0.2987` under
+`ES_measureSMD`),
+
+`se` = the standard error of the estimate; here, it is
+($\text SE[\mu_{lnRR}]$ = `0.0799` and $\text SE[\mu_{SMD}]$ =
+`0.0919`),
+
+`tval` = the value of test statistic (in our case: t-value); a
+t-distribution with `1073` degrees of freedom to test the overall effect
+and compute (95% by default) confidence intervals,
+
+`df` = degrees of freedom of the t-distribution to test the the overall
+effect and compute (95% by default) confidence intervals,
+
+`pval` = the corresponding p value from the test; in our case, `0.8225`
+for the test of overall effect measured as $lnRR$ and `0.0012` for the
+the test of overall effect measured as $SMD$,
+
+`ci.lb` = lower boundary of (95% by default) confidence intervals,
+
+`ci.Ub` = upper boundary of (95% by default) confidence intervals.
+
+This example happens to show that using different effect size measures
+might lead to different conclusions. If using $lnRR$, there is no
+overall effect, while using $SMD$ yields an overall effect. To make
+matters worse, the $lnRR$ and $SMD$ have different signs (see the main
+text for the explanations). This creates room for analytic flexibility
+or “researcher degrees of freedom”. The analysts may (un)intentionally
+search methodological specifications to align with their desired
+findings, leading to confirmation bias (i.e., seeing what they want to
+see) and the risk of erroneously concluding the null effect as the true
+effect (i.e., a high false positive rate).
+
+**Sensitivity analysis of the imputed sampling variance-covariance
+matrix**
+
+Next, we show how to perform a sensitivity analysis to examine the
+extent to which the overall effect derived from the BMLMA of lnRR and
+SMD is sensitive to the assumption of sampling correlation values
+($\rho_{s}$) used for constructing sampling variance-covariance matrix.
+
+First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these
+values arbitrarily; you can set them based on your expertise in your
+field):
+
+```{=html}
 <pre class="code rsplus">
 rho_range <- c(0.3, 0.5, 0.7)
 </pre>
+```
+Then, we write a function to help repeatedly run the specified model,
+changing $\rho_{s}$ at a time.
 
-Then, we write a function to help repeatedly run the specified model, changing $\rho_{s}$ at a time.
-
+```{=html}
 <pre class="code rsplus">
 BMLMA_VCV_range <- list()
 for (i in 1:length(rho_range)) {
@@ -899,7 +1202,7 @@ BMLMA_VCV_range[[i]] <- rma.mv(yi = ES,
 )
 }
 </pre>
-
+```
 ```{r sensitivity of rho in BMLMA, results='hide',warning=FALSE}
 # assume a range values of rho
 rho_range <- c(0.3, 0.5, 0.7)
@@ -931,10 +1234,12 @@ BMLMA_VCV_range[[i]] <- rma.mv(yi = ES,
 }
 ```
 
-We summarize the results of the sensitivity analysis in **Table S6** ($lnRR$) and **Table S7** ($SMD$). 
+We summarize the results of the sensitivity analysis in **Table S6**
+($lnRR$) and **Table S7** ($SMD$).
 
-__Table S6__
-Sensitivity analysis examining the robustness of the overall effect measured as $lnRR$ to the assumption of $\rho_{s}$ values in the bivariate multilevel meta-analysis.  
+**Table S6** Sensitivity analysis examining the robustness of the
+overall effect measured as $lnRR$ to the assumption of $\rho_{s}$ values
+in the bivariate multilevel meta-analysis.
 
 ```{r Table S6}
 t6 <- data.frame(rho  = rho_range,
@@ -949,8 +1254,9 @@ colnames(t6) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard err
 t6 %>% dfround(4) %>% DT::datatable()
 ```
 
-__Table S7__
-Sensitivity analysis examining the robustness of the overall effect measured as $SMD$ to the assumption of $\rho_{s}$ values in the bivariate multilevel meta-analysis.  
+**Table S7** Sensitivity analysis examining the robustness of the
+overall effect measured as $SMD$ to the assumption of $\rho_{s}$ values
+in the bivariate multilevel meta-analysis.
 
 ```{r Table S7}
 t7 <- data.frame(rho  = rho_range,
@@ -967,23 +1273,35 @@ t7 %>% dfround(4) %>% DT::datatable()
 
 # Robust variance estimation
 
-Robust variance estimation provides a way to guard against the arbitrarily assumed sampling correlation ($\rho_{s}$) and inaccurate estimates of variance components. Therefore, as we emphasized in the main text, we should perform robust variance estimation after fitting either MLMA or BMLMA.
+Robust variance estimation provides a way to guard against the
+arbitrarily assumed sampling correlation ($\rho_{s}$) and inaccurate
+estimates of variance components. Therefore, as we emphasized in the
+main text, we should perform robust variance estimation after fitting
+either MLMA or BMLMA.
 
-In `R`, it is very straightforward to implement robust variance estimation. We can supply the fitted MLMA or BMLMA to the function `robust()` from the `metafor` package. We use ‘bias-reduced linearization’ correction (the so-called `CR2` in `clubSandwich` package @ pustejovsky2022meta) for small-sample size adjustment. Using the fitted BMLMA (the object `BMLMA`) as an example, the implementation of robust variance estimation is as:
+In `R`, it is very straightforward to implement robust variance
+estimation. We can supply the fitted MLMA or BMLMA to the function
+`robust()` from the `metafor` package. We use ‘bias-reduced
+linearization’ correction (the so-called `CR2` in `clubSandwich` package
+\@ pustejovsky2022meta) for small-sample size adjustment. Using the
+fitted BMLMA (the object `BMLMA`) as an example, the implementation of
+robust variance estimation is as:
 
+```{=html}
 <pre class="code rsplus">
 BMLMA_RVE <- robust(BMLMA, # fitted bivariate multilevel model for which to make robust model inference;
                     cluster = dat_all$Study_ID, 
                     clubSandwich = TRUE # ‘bias-reduced linearization’ small-sample size correction (the so-called CR2) is specified to approximate variance-covariance via clubSandwich package.
                     )
 </pre>
-
+```
 Now, let's look at the corresponding output:
 
+```{=html}
 <pre class="code rsplus">
 print(BMLMA_RVE)
 </pre>
-
+```
 ```{r RVE, warning=FALSE}
 # make robust model inferences
 BMLMA_RVE <- robust(BMLMA, # fitted model for which to make robust model inference;
@@ -994,18 +1312,29 @@ BMLMA_RVE <- robust(BMLMA, # fitted model for which to make robust model inferen
 print(BMLMA_RVE)
 ```
 
-As you can see, robust variance estimation computes the robust standard error and use it for the subsequent testing of null hypothesis (`t-stat`, `p-val`) and confidence intervals of the overall effect.
+As you can see, robust variance estimation computes the robust standard
+error and use it for the subsequent testing of null hypothesis
+(`t-stat`, `p-val`) and confidence intervals of the overall effect.
 
-Given that the above BMLMA of lnRR and SMD has many parameters to be estimated. For some small datasets, this proposed approach of joint synthesis of lnRR and SMD is potentially highly parameterized and may be prone to overparameterization. Therefore, the advantages might be compromised by the increasing number of parameters that need to be estimated. In such a case, we recommend using MLMA as the main method and BMLMA as the sensitivity analysis. In essence, MLMA is a simplified version of BMLMA.
+Given that the above BMLMA of lnRR and SMD has many parameters to be
+estimated. For some small datasets, this proposed approach of joint
+synthesis of lnRR and SMD is potentially highly parameterized and may be
+prone to overparameterization. Therefore, the advantages might be
+compromised by the increasing number of parameters that need to be
+estimated. In such a case, we recommend using MLMA as the main method
+and BMLMA as the sensitivity analysis. In essence, MLMA is a simplified
+version of BMLMA.
 
-# License  
+# License
 
-This documented is licensed under the following license: [CC Attribution-Noncommercial-Share Alike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en).  
+This documented is licensed under the following license: [CC
+Attribution-Noncommercial-Share Alike 4.0
+International](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en).
 
-# Software and package versions  
+# Software and package versions
 
 ```{r}
 sessionInfo() %>% pander()
 ```
 
-# References  
+# References
