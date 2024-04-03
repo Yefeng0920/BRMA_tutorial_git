@@ -61,12 +61,11 @@ repository](https://github.com/Yefeng0920/BRMA_tutorial_git).
 If our paper and tutorial have helped you, please cite the following
 paper:
 
-> Yefeng Yang, Coralie Williams, Alistair M. Senior, Kyle Morrison, Lorenzo Ricolfi, Jinming
-> Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel
-> meta-analyses of log response ratio and standardized mean difference
-> towards robust and reproducible evidence syntheses in environmental
-> and biological sciences. 2024 
-
+> Yefeng Yang, Coralie Williams, Alistair M. Senior, Kyle Morrison,
+> Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa.
+> Bivariate multilevel meta-analyses of log response ratio and
+> standardized mean difference towards robust and reproducible evidence
+> syntheses in environmental and biological sciences. 2024
 
 ```{r global options, include=FALSE}
 library(knitr)
@@ -106,7 +105,8 @@ meta-analysis visualization package) from Github repository, execute
 
 Key package list:
 
-`metafor`, `clubSandwich`, `orchaRd`, `ellipse`, `tidyverse`, `here`, `DT`, `readxl`, `stringr`, `ggplot2`, `pander`.
+`metafor`, `clubSandwich`, `orchaRd`, `ellipse`, `tidyverse`, `here`,
+`DT`, `readxl`, `stringr`, `ggplot2`, `pander`.
 
 These packages might take a little while to install; you may wish to
 grab a cup of coffee while waiting!
@@ -122,7 +122,8 @@ pacman::p_load(tidyverse,
                patchwork,
                stringr,
                ggplot2,
-               pander
+               pander,
+               orchaRd
                )
 ```
 
@@ -810,11 +811,17 @@ colnames(t5) <- c("Sampling correlation", "Overall effect (SMD)", "Standard erro
 t5 %>% dfround(4) %>% DT::datatable()
 ```
 
-__Bonus 1__
+**Bonus 1**
 
-Quantifying heterogeneity is an important procedure of meta-analysis. In the Supplementary Material, we showed the formulas for quantifying heterogeneity using the $I^2$ statistic. The $I^2$ statistic is the unit-free heterogeneity measure and quantifies heterogeneity by expressing the proportion of variance beyond sampling variance. 
+Quantifying heterogeneity is an important procedure of meta-analysis. In
+the Supplementary Material, we showed the formulas for quantifying
+heterogeneity using the $I^2$ statistic. The $I^2$ statistic is the
+unit-free heterogeneity measure and quantifies heterogeneity by
+expressing the proportion of variance beyond sampling variance.
 
-Under the framework of the three-level MLMA, the $I^2$ statistic can be partitioned into between- and within-study levels to provide extra biological information.
+Under the framework of the three-level MLMA, the $I^2$ statistic can be
+partitioned into between- and within-study levels to provide extra
+biological information.
 
 This can be easily done by using `i2_ml()` from `orchaRd` package.
 
@@ -994,10 +1001,14 @@ BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in 
                )
 ```
 
-__Bonus 2__
+**Bonus 2**
 
-When you run your own BMLMA model, you might encounter model convergence issue (the model parameters are non-identifiable). If this happened, you can tune the parameters related to the numerical optimization, such as the step, the number of iterations, threshold. The following link provides some useful tips: http://www.metafor-project.org/doku.php/tips:convergence_problems_rma_mv 
-
+When you run your own BMLMA model, you might encounter model convergence
+issue (the model parameters are non-identifiable). If this happened, you
+can tune the parameters related to the numerical optimization, such as
+the step, the number of iterations, threshold. The following link
+provides some useful tips:
+<http://www.metafor-project.org/doku.php/tips:convergence_problems_rma_mv>
 
 Let's have a look at the the model output from the fitted BMLMA of lnRR
 and SMD (object `BMLMA`). `summary()` function can return us the model
@@ -1202,11 +1213,22 @@ findings, leading to confirmation bias (i.e., seeing what they want to
 see) and the risk of erroneously concluding the null effect as the true
 effect (i.e., a high false positive rate).
 
-__Bonus 3__
+**Bonus 3**
 
-As shown above, the lnRR parameters (or true effect sizes) are positively correlated with the SMD parameters. Some users might want to visualize this correlation. To do so, we first need to derive the regression line (or, more precisely, intercept and slope of the regression line) from BMLMA model where we regress the lnRR parameters on the SMD parameters.  
+As shown above, the lnRR parameters (or true effect sizes) are
+positively correlated with the SMD parameters. Some users might want to
+visualize this correlation. To do so, we first need to derive the
+regression line (or, more precisely, intercept and slope of the
+regression line) from BMLMA model where we regress the lnRR parameters
+on the SMD parameters.
 
-To get the intercept and slope of the regression line, we use the function `matreg()` to fit a regression model based on correlation and covariance matrices derived from the fitted BMLMA. With the intercept and slope in hand, it is easy to `geom_abline()` to visualize the bivariate correlation between the lnRR parameters and the SMD parameters. We can also add the 95% coverage region using `ellipse` package. The whole syntax is as follows:
+To get the intercept and slope of the regression line, we use the
+function `matreg()` to fit a regression model based on correlation and
+covariance matrices derived from the fitted BMLMA. With the intercept
+and slope in hand, it is easy to `geom_abline()` to visualize the
+bivariate correlation between the lnRR parameters and the SMD
+parameters. We can also add the 95% coverage region using `ellipse`
+package. The whole syntax is as follows:
 
 ```{=html}
 <pre class="code rsplus">
@@ -1247,7 +1269,6 @@ pivot_wider(dat_all, names_from = ES_measure, values_from = c(ES, V_ES)) %>%
   theme_bw()
 ```
 
-
 **Sensitivity analysis of the imputed sampling variance-covariance
 matrix**
 
@@ -1265,7 +1286,6 @@ field):
 rho_range <- c(0.3, 0.5, 0.7)
 </pre>
 ```
-
 Then, we write a function to help repeatedly run the specified model,
 changing $\rho_{s}$ at a time.
 
@@ -1391,10 +1411,11 @@ In `R`, it is very straightforward to implement robust variance
 estimation. We can supply the fitted MLMA or BMLMA to the function
 `robust()` from the `metafor` package. We use ‘bias-reduced
 linearization’ correction (the so-called `CR2` in `clubSandwich` package
-@pustejovsky2022meta) for small-sample size adjustment. The implementation of robust
-variance estimation is straightforward.
+@pustejovsky2022meta) for small-sample size adjustment. The
+implementation of robust variance estimation is straightforward.
 
 The robust variance estimation of BMLMA model:
+
 ```{=html}
 <pre class="code rsplus">
 BMLMA_RVE <- robust(BMLMA, # fitted bivariate multilevel model for which to make robust model inference;
@@ -1425,6 +1446,7 @@ error and use it for the subsequent testing of null hypothesis
 (`t-stat`, `p-val`) and confidence intervals of the overall effect.
 
 The robust variance estimation of MLMA model using lnRR:
+
 ```{=html}
 <pre class="code rsplus">
 MLMA_RVE_lnRR <- robust(MLMA_lnRR,
@@ -1446,6 +1468,7 @@ print(MLMA_RVE_lnRR)
 ```
 
 The robust variance estimation of MLMA model using SMD:
+
 ```{=html}
 <pre class="code rsplus">
 MLMA_RVE_SMD <- robust(MLMA_SMD,
@@ -1456,7 +1479,7 @@ MLMA_RVE_SMD <- robust(MLMA_SMD,
 print(MLMA_RVE_SMD)
 </pre>
 ```
-```{r RVE MLMA lnRR, warning=FALSE}
+```{r RVE MLMA SMD, warning=FALSE}
 # make robust model inferences
 MLMA_RVE_SMD <- robust(MLMA_SMD,
                         cluster = dat_SMD$Study_ID, 
@@ -1465,8 +1488,6 @@ MLMA_RVE_SMD <- robust(MLMA_SMD,
 
 print(MLMA_RVE_SMD)
 ```
-
-
 
 # License
 
