@@ -10,7 +10,7 @@ aspects of the study have been omitted.
 
 If our paper and tutorial have helped you, please cite the following paper:
 
-> Yefeng Yang, Coralie Williams, Kyle Morrison, Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel meta-analyses of log response ratio and standardized mean difference towards robust and reproducible evidence syntheses in environmental and biological sciences. 2024.
+> Yefeng Yang, Coralie Williams, Alistair M. Senior, Kyle Morrison, Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel meta-analyses of log response ratio and standardized mean difference towards robust and reproducible evidence syntheses in environmental and biological sciences. 2024.
 > 
 
 ## Structure
