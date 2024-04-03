@@ -1,6 +1,6 @@
 ---
 title: "Bivariate multilevel meta-analysis of log response ratio and standardized mean difference towards robust and reproducible evidence syntheses in environmental and biological sciences"
-author: "Yefeng Yang, Coralie Williams, Kyle Morrison, Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa"
+author: "Yefeng Yang, Coralie Williams, Alistair M. Senior, Kyle Morrison, Lorenzo Ricolfi, Jinming Pan, Malgorzata Lagisz, Shinichi Nakagawa"
 date: "last update April 2024"
 output:
   rmdformats::robobook:
@@ -61,13 +61,12 @@ repository](https://github.com/Yefeng0920/BRMA_tutorial_git).
 If our paper and tutorial have helped you, please cite the following
 paper:
 
-> Yefeng Yang, Coralie Williams, Kyle Morrison, Lorenzo Ricolfi, Jinming
+> Yefeng Yang, Coralie Williams, Alistair M. Senior, Kyle Morrison, Lorenzo Ricolfi, Jinming
 > Pan, Malgorzata Lagisz, Shinichi Nakagawa. Bivariate multilevel
 > meta-analyses of log response ratio and standardized mean difference
 > towards robust and reproducible evidence syntheses in environmental
 > and biological sciences. 2024 
 
-<!--# please add Alistair  -->
 
 ```{r global options, include=FALSE}
 library(knitr)
@@ -107,8 +106,7 @@ meta-analysis visualization package) from Github repository, execute
 
 Key package list:
 
-`metafor`, `clubSandwich`, `tidyverse`, `here`, `DT`, `readxl`,
-`stringr`, `ggplot2`, `pander`.
+`metafor`, `clubSandwich`, `orchaRd`, `ellipse`, `tidyverse`, `here`, `DT`, `readxl`, `stringr`, `ggplot2`, `pander`.
 
 These packages might take a little while to install; you may wish to
 grab a cup of coffee while waiting!
@@ -118,6 +116,7 @@ pacman::p_load(tidyverse,
                here,
                DT,
                readxl, 
+               ellipse,
                metafor,
                clubSandwich,
                patchwork,
@@ -654,7 +653,6 @@ We recommend conducting a sensitivity analysis to examine the extent to
 which the overall effect derived from the MLMA of lnRR and SMD is
 sensitive to the assumption of sampling correlation values ($\rho_{s}$)
 used for constructing sampling variance-covariance matrix.
-<!--# we need to show to how to get I2 and other hetro measures using orchaRd??? -->
 
 First, set a series of $\rho_{s}$ (i.e., 0.3, 0.5, 0.7) (we assume these
 values arbitrarily; you can set them based on your expertise in your
@@ -773,7 +771,6 @@ different assumption of $\rho_{s}$ values.
 **Table S4** Sensitivity analysis examining the robustness of the
 overall effect measured as $lnRR$ to the assumption of $\rho_{s}$ values
 in the multilevel meta-analysis.
-<!--# I wondered AIC stuff may be usefu to add to here in the table s4 and s5 discuss -->
 
 ```{r Table S4}
 t4 <- data.frame(rho  = rho_range,
@@ -781,9 +778,13 @@ t4 <- data.frame(rho  = rho_range,
                  "standard error" = sapply(MLMAlnRR_VCV_range, function(x) x$se),
                  "p-value" = sapply(MLMAlnRR_VCV_range, function(x) x$pval),
                  "Lower CI" = sapply(MLMAlnRR_VCV_range, function(x) x$ci.lb),
-                 "Upper CI" = sapply(MLMAlnRR_VCV_range, function(x) x$ci.ub))
+                 "Upper CI" = sapply(MLMAlnRR_VCV_range, function(x) x$ci.ub),
+                 "Log-likehood" = sapply(MLMAlnRR_VCV_range, function(x) fitstats(x)[1,1]),
+                 "AIC" = sapply(MLMAlnRR_VCV_range, function(x) fitstats(x)[3,1]),
+                 "BIC" = sapply(MLMAlnRR_VCV_range, function(x) fitstats(x)[4,1]),
+                 "AICc" = sapply(MLMAlnRR_VCV_range, function(x) fitstats(x)[5,1]))
 
-colnames(t4) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard error", "p-value", "Lower CI", "Upper CI")
+colnames(t4) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard error", "p-value", "Lower CI", "Upper CI", "Log-likehood", "AIC", "BIC", "AICc")
 
 t4 %>% dfround(4) %>% DT::datatable()
 ```
@@ -798,11 +799,45 @@ t5 <- data.frame(rho  = rho_range,
                  "standard error" = sapply(MLMASMD_VCV_range, function(x) x$se),
                  "p-value" = sapply(MLMASMD_VCV_range, function(x) x$pval),
                  "Lower CI" = sapply(MLMASMD_VCV_range, function(x) x$ci.lb),
-                 "Upper CI" = sapply(MLMASMD_VCV_range, function(x) x$ci.ub))
+                 "Upper CI" = sapply(MLMASMD_VCV_range, function(x) x$ci.ub),
+                 "Log-likehood" = sapply(MLMASMD_VCV_range, function(x) fitstats(x)[1,1]),
+                 "AIC" = sapply(MLMASMD_VCV_range, function(x) fitstats(x)[3,1]),
+                 "BIC" = sapply(MLMASMD_VCV_range, function(x) fitstats(x)[4,1]),
+                 "AICc" = sapply(MLMASMD_VCV_range, function(x) fitstats(x)[5,1]))
 
-colnames(t5) <- c("Sampling correlation", "Overall effect (SMD)", "Standard error", "p-value", "Lower CI", "Upper CI")
+colnames(t5) <- c("Sampling correlation", "Overall effect (SMD)", "Standard error", "p-value", "Lower CI", "Upper CI", "Log-likehood", "AIC", "BIC", "AICc")
 
 t5 %>% dfround(4) %>% DT::datatable()
+```
+
+__Bonus 1__
+
+Quantifying heterogeneity is an important procedure of meta-analysis. In the Supplementary Material, we showed the formulas for quantifying heterogeneity using the $I^2$ statistic. The $I^2$ statistic is the unit-free heterogeneity measure and quantifies heterogeneity by expressing the proportion of variance beyond sampling variance. 
+
+Under the framework of the three-level MLMA, the $I^2$ statistic can be partitioned into between- and within-study levels to provide extra biological information.
+
+This can be easily done by using `i2_ml()` from `orchaRd` package.
+
+For MLMA using lnRR:
+
+```{=html}
+<pre class="code rsplus">
+i2_ml(MLMA_lnRR)
+</pre>
+```
+```{r MLMA lnRR I2}
+i2_ml(MLMA_lnRR) 
+```
+
+For MLMA using SMD:
+
+```{=html}
+<pre class="code rsplus">
+i2_ml(MLMA_SMD)
+</pre>
+```
+```{r MLMA SMD I2}
+i2_ml(MLMA_SMD) 
 ```
 
 # Bivariate multilevel meta-analysis of lnRR and SMD
@@ -929,7 +964,6 @@ We also use `-1` to remove the intercept (non-contrast coding).
 
 The complete syntax to fit the bivariate multilevel meta-analysis of
 lnRR and SMD (Equation 7) is as follows:
-<!--# adding some visualizations - we could galaxy plots discuss -->
 
 ```{=html}
 <pre class="code rsplus">
@@ -960,10 +994,14 @@ BMLMA <- rma.mv(yi = ES, # specify the effect size estimate (the variable ES in 
                )
 ```
 
+__Bonus 2__
+
+When you run your own BMLMA model, you might encounter model convergence issue (the model parameters are non-identifiable). If this happened, you can tune the parameters related to the numerical optimization, such as the step, the number of iterations, threshold. The following link provides some useful tips: http://www.metafor-project.org/doku.php/tips:convergence_problems_rma_mv 
+
+
 Let's have a look at the the model output from the fitted BMLMA of lnRR
 and SMD (object `BMLMA`). `summary()` function can return us the model
 output:
-<!--# I wondered whether we should put some tips when the complex models do not run - how to get it running with http://www.metafor-project.org/doku.php/tips:convergence_problems_rma_mv -->
 
 ```{=html}
 <pre class="code rsplus">
@@ -1164,6 +1202,52 @@ findings, leading to confirmation bias (i.e., seeing what they want to
 see) and the risk of erroneously concluding the null effect as the true
 effect (i.e., a high false positive rate).
 
+__Bonus 3__
+
+As shown above, the lnRR parameters (or true effect sizes) are positively correlated with the SMD parameters. Some users might want to visualize this correlation. To do so, we first need to derive the regression line (or, more precisely, intercept and slope of the regression line) from BMLMA model where we regress the lnRR parameters on the SMD parameters.  
+
+To get the intercept and slope of the regression line, we use the function `matreg()` to fit a regression model based on correlation and covariance matrices derived from the fitted BMLMA. With the intercept and slope in hand, it is easy to `geom_abline()` to visualize the bivariate correlation between the lnRR parameters and the SMD parameters. We can also add the 95% coverage region using `ellipse` package. The whole syntax is as follows:
+
+```{=html}
+<pre class="code rsplus">
+ab.l <- matreg(y=2, x=1, R=BMLMA$G, cov=TRUE, means=coef(BMLMA), n=BMLMA$g.levels.comb.k) # fit regression model
+
+xy <- ellipse(BMLMA$G, centre=coef(BMLMA), level=0.95) # get 95% coverage region
+ellipse_df <- data.frame(x = xy[, 1], y = xy[, 2]) # convert it int dataframe so that we can use ggplot to make a figure
+
+pivot_wider(dat_all, names_from = ES_measure, values_from = c(ES, V_ES)) %>%
+  ggplot() + 
+  geom_point(aes(x = ES_lnRR, y = ES_SMD, size = 1/sqrt(V_ES_lnRR)), color = "#1B9E77", alpha = 0.5) + 
+  geom_point(aes(x = coef(BMLMA)[1], y = coef(BMLMA)[2]), color = "red", size = 2) + 
+  geom_abline(intercept = ab.l$tab$beta[1], slope = ab.l$tab$beta[2]) +
+  geom_path(data = ellipse_df, aes(x = x, y = y), color = "gray50") +
+  scale_x_continuous(limits = c(-2.5, 2.5)) + 
+  scale_y_continuous(limits = c(-2.5, 2.5)) + 
+  guides(size = "none") + 
+  labs(x = "lnRR", y = "SMD") + 
+  theme_bw()
+</pre>
+```
+```{r abline, warning=FALSE}
+ab.l <- matreg(y=2, x=1, R=BMLMA$G, cov=TRUE, means=coef(BMLMA), n=BMLMA$g.levels.comb.k) # fit a regression model
+
+xy <- ellipse(BMLMA$G, centre=coef(BMLMA), level=0.95) # get 95% coverage region
+ellipse_df <- data.frame(x = xy[, 1], y = xy[, 2]) # convert it into a dataframe so that we can use ggplot to make a figure
+
+pivot_wider(dat_all, names_from = ES_measure, values_from = c(ES, V_ES)) %>%
+  ggplot() + 
+  geom_point(aes(x = ES_lnRR, y = ES_SMD, size = 1/sqrt(V_ES_lnRR)), color = "#1B9E77", alpha = 0.5) + 
+  geom_point(aes(x = coef(BMLMA)[1], y = coef(BMLMA)[2]), color = "red", size = 2) + 
+  geom_abline(intercept = ab.l$tab$beta[1], slope = ab.l$tab$beta[2]) +
+  geom_path(data = ellipse_df, aes(x = x, y = y), color = "gray50") +
+  scale_x_continuous(limits = c(-2.5, 2.5)) + 
+  scale_y_continuous(limits = c(-2.5, 2.5)) + 
+  guides(size = "none") + 
+  labs(x = "lnRR", y = "SMD") + 
+  theme_bw()
+```
+
+
 **Sensitivity analysis of the imputed sampling variance-covariance
 matrix**
 
@@ -1181,6 +1265,7 @@ field):
 rho_range <- c(0.3, 0.5, 0.7)
 </pre>
 ```
+
 Then, we write a function to help repeatedly run the specified model,
 changing $\rho_{s}$ at a time.
 
@@ -1253,9 +1338,13 @@ t6 <- data.frame(rho  = rho_range,
                  "standard error" = sapply(BMLMA_VCV_range, function(x) x$se[1]),
                  "p-value" = sapply(BMLMA_VCV_range, function(x) x$pval[1]),
                  "Lower CI" = sapply(BMLMA_VCV_range, function(x) x$ci.lb[1]),
-                 "Upper CI" = sapply(BMLMA_VCV_range, function(x) x$ci.ub[1]))
+                 "Upper CI" = sapply(BMLMA_VCV_range, function(x) x$ci.ub[1]), 
+                 "Log-likehood" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[1,1]),
+                 "AIC" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[3,1]),
+                 "BIC" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[4,1]),
+                 "AICc" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[5,1]))
 
-colnames(t6) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard error", "p-value", "Lower CI", "Upper CI")
+colnames(t6) <- c("Sampling correlation", "Overall effect (lnRR)", "Standard error", "p-value", "Lower CI", "Upper CI", "Log-likehood", "AIC", "BIC", "AICc")
 
 t6 %>% dfround(4) %>% DT::datatable()
 ```
@@ -1270,12 +1359,25 @@ t7 <- data.frame(rho  = rho_range,
                  "standard error" = sapply(BMLMA_VCV_range, function(x) x$se[2]),
                  "p-value" = sapply(BMLMA_VCV_range, function(x) x$pval[2]),
                  "Lower CI" = sapply(BMLMA_VCV_range, function(x) x$ci.lb[2]),
-                 "Upper CI" = sapply(BMLMA_VCV_range, function(x) x$ci.ub[2]))
+                 "Upper CI" = sapply(BMLMA_VCV_range, function(x) x$ci.ub[2]), 
+                 "Log-likehood" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[1,1]),
+                 "AIC" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[3,1]),
+                 "BIC" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[4,1]),
+                 "AICc" = sapply(BMLMA_VCV_range, function(x) fitstats(x)[5,1]))
 
-colnames(t7) <- c("Sampling correlation", "Overall effect (SMD)", "Standard error", "p-value", "Lower CI", "Upper CI")
+colnames(t7) <- c("Sampling correlation", "Overall effect (SMD)", "Standard error", "p-value", "Lower CI", "Upper CI", "Log-likehood", "AIC", "BIC", "AICc")
 
 t7 %>% dfround(4) %>% DT::datatable()
 ```
+
+Given that the above BMLMA of lnRR and SMD has many parameters to be
+estimated. For some small datasets, this proposed approach of joint
+synthesis of lnRR and SMD is potentially highly parameterized and may be
+prone to overparameterization. Therefore, the advantages might be
+compromised by the increasing number of parameters that need to be
+estimated. In such a case, we recommend using MLMA as the main method
+and BMLMA as the sensitivity analysis. In essence, MLMA is a simplified
+version of BMLMA.
 
 # Robust variance estimation
 
@@ -1289,11 +1391,10 @@ In `R`, it is very straightforward to implement robust variance
 estimation. We can supply the fitted MLMA or BMLMA to the function
 `robust()` from the `metafor` package. We use ‘bias-reduced
 linearization’ correction (the so-called `CR2` in `clubSandwich` package
-@pustejovsky2022meta) for small-sample size adjustment. Using the fitted
-BMLMA (the object `BMLMA`) as an example, the implementation of robust
-variance estimation is as:
-<!--# it will be nice to have robust for mulitlevel ones so you can fit this so people get exposed to the idea that robust can take any meta-analytic models -->
+@pustejovsky2022meta) for small-sample size adjustment. The implementation of robust
+variance estimation is straightforward.
 
+The robust variance estimation of BMLMA model:
 ```{=html}
 <pre class="code rsplus">
 BMLMA_RVE <- robust(BMLMA, # fitted bivariate multilevel model for which to make robust model inference;
@@ -1323,14 +1424,49 @@ As you can see, robust variance estimation computes the robust standard
 error and use it for the subsequent testing of null hypothesis
 (`t-stat`, `p-val`) and confidence intervals of the overall effect.
 
-Given that the above BMLMA of lnRR and SMD has many parameters to be
-estimated. For some small datasets, this proposed approach of joint
-synthesis of lnRR and SMD is potentially highly parameterized and may be
-prone to overparameterization. Therefore, the advantages might be
-compromised by the increasing number of parameters that need to be
-estimated. In such a case, we recommend using MLMA as the main method
-and BMLMA as the sensitivity analysis. In essence, MLMA is a simplified
-version of BMLMA.
+The robust variance estimation of MLMA model using lnRR:
+```{=html}
+<pre class="code rsplus">
+MLMA_RVE_lnRR <- robust(MLMA_lnRR,
+                        cluster = dat_lnRR$Study_ID, 
+                        clubSandwich = TRUE 
+                        )
+
+print(MLMA_RVE_lnRR)
+</pre>
+```
+```{r RVE MLMA lnRR, warning=FALSE}
+# make robust model inferences
+MLMA_RVE_lnRR <- robust(MLMA_lnRR,
+                        cluster = dat_lnRR$Study_ID, 
+                        clubSandwich = TRUE 
+                        )
+
+print(MLMA_RVE_lnRR)
+```
+
+The robust variance estimation of MLMA model using SMD:
+```{=html}
+<pre class="code rsplus">
+MLMA_RVE_SMD <- robust(MLMA_SMD,
+                        cluster = dat_SMD$Study_ID, 
+                        clubSandwich = TRUE 
+                        )
+
+print(MLMA_RVE_SMD)
+</pre>
+```
+```{r RVE MLMA lnRR, warning=FALSE}
+# make robust model inferences
+MLMA_RVE_SMD <- robust(MLMA_SMD,
+                        cluster = dat_SMD$Study_ID, 
+                        clubSandwich = TRUE 
+                        )
+
+print(MLMA_RVE_SMD)
+```
+
+
 
 # License
 
