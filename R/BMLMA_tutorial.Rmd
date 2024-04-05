@@ -73,7 +73,7 @@ library(rmdformats)
 ## Global options
 # options(max.print = "75")
 knitr::opts_chunk$set(
-  echo = FALSE, cache = FALSE, prompt = FALSE,
+  echo = FALSE, cache = TRUE, prompt = FALSE,
   tidy = FALSE, comment = NA,
   message = FALSE, warning = FALSE
 )
@@ -123,7 +123,8 @@ pacman::p_load(tidyverse,
                stringr,
                ggplot2,
                pander,
-               orchaRd
+               orchaRd,
+               patchwork
                )
 ```
 
@@ -1243,8 +1244,8 @@ pivot_wider(dat_all, names_from = ES_measure, values_from = c(ES, V_ES)) %>%
   geom_point(aes(x = coef(BMLMA)[1], y = coef(BMLMA)[2]), color = "red", size = 2) + 
   geom_abline(intercept = ab.l$tab$beta[1], slope = ab.l$tab$beta[2]) +
   geom_path(data = ellipse_df, aes(x = x, y = y), color = "gray50") +
-  scale_x_continuous(limits = c(-2.5, 2.5)) + 
-  scale_y_continuous(limits = c(-2.5, 2.5)) + 
+  #scale_x_continuous(limits = c(-2.5, 2.5)) + 
+  #scale_y_continuous(limits = c(-2.5, 2.5)) + 
   guides(size = "none") + 
   labs(x = "lnRR", y = "SMD") + 
   theme_bw()
@@ -1262,11 +1263,36 @@ pivot_wider(dat_all, names_from = ES_measure, values_from = c(ES, V_ES)) %>%
   geom_point(aes(x = coef(BMLMA)[1], y = coef(BMLMA)[2]), color = "red", size = 2) + 
   geom_abline(intercept = ab.l$tab$beta[1], slope = ab.l$tab$beta[2]) +
   geom_path(data = ellipse_df, aes(x = x, y = y), color = "gray50") +
-  scale_x_continuous(limits = c(-2.5, 2.5)) + 
-  scale_y_continuous(limits = c(-2.5, 2.5)) + 
+  #scale_x_continuous(limits = c(-2.5, 2.5)) + 
+  #scale_y_continuous(limits = c(-2.5, 2.5)) + 
   guides(size = "none") + 
   labs(x = "lnRR", y = "SMD") + 
   theme_bw()
+```
+
+Now let's compare this "galaxy plot" with orchard plots of the two effects separately.
+
+```{=html}
+<pre class="code rsplus">
+# orchard plot for lnRR
+orchard_plot(mod2_lnRR, group = "Study_ID",  xlab = "lnRR", trunk.size = 0.5, branch.size = 4)  + scale_fill_manual(values = "#1B9E77") +
+    scale_colour_manual(values ="#1B9E77")
+
+# orchard plot for SMD
+orchard_plot(mod2_SMD, group = "Study_ID",  xlab = "SMD", trunk.size = 0.5, branch.size = 4) + scale_fill_manual(values = "#1B9E77") +
+    scale_colour_manual(values ="#1B9E77")
+</pre>
+```
+```{r orchard plot,fig.height = 2.5}
+
+# orchard plot for lnRR
+orchard_plot(mod2_lnRR, group = "Study_ID",  xlab = "lnRR", trunk.size = 0.5, branch.size = 4)  + scale_fill_manual(values = "#1B9E77") +
+    scale_colour_manual(values ="#1B9E77")
+
+# orchard plot for SMD
+orchard_plot(mod2_SMD, group = "Study_ID",  xlab = "SMD", trunk.size = 0.5, branch.size = 4) + scale_fill_manual(values = "#1B9E77") +
+    scale_colour_manual(values ="#1B9E77")
+
 ```
 
 **Sensitivity analysis of the imputed sampling variance-covariance
