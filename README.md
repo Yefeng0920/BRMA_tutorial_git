@@ -1,4 +1,4 @@
-# Tutorial for: Bivariate multilevel meta-analysis of log response ratio and standardized mean difference towards robust and reproducible evidence syntheses in environmental and biological sciences
+# Tutorial for: Bivariate multilevel meta-analysis of log response ratio and standardized mean difference for robust and reproducible environmental and biological sciences
 
 
 ## Transparency declaration
