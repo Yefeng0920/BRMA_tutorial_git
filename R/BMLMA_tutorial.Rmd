@@ -672,6 +672,8 @@ Conduct the sensitivity analysis on $lnRR$:
 
 ```{=html}
 <pre class="code rsplus">
+for (i in 1:length(rho_range))
+{
 MLMAlnRR_VCV_range <- list() # repeatedly run the specified model with varying rho
 
 VCV_range <- vcalc(vi = V_lnRR, 
@@ -696,7 +698,8 @@ Conduct the sensitivity analysis on $SMD$:
 ```{=html}
 <pre class="code rsplus">
 MLMASMD_VCV_range <- list() # repeatedly run the specified model with varying rho
-
+for (i in 1:length(rho_range))
+{
 VCV_range <- vcalc(vi = V_SMD, 
                    cluster = Study_ID, 
                    obs = ES_ID, 
